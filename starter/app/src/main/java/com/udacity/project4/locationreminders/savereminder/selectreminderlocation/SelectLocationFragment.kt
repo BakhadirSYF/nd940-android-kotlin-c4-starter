@@ -19,7 +19,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
+import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
+import com.udacity.project4.locationreminders.savereminder.SaveReminderFragmentDirections
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
@@ -31,6 +33,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         const val TAG = "SelectLocationFragment"
     }
 
+    private var userSelectedPoi: PointOfInterest? = null
     private val REQUEST_LOCATION_PERMISSION = 1
     private var currentLocation: Location? = null
 
@@ -54,8 +57,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-//        TODO: call this function after the user confirms on the selected location
-        onLocationSelected()
+        binding.saveLocation.setOnClickListener {
+            Log.d(TAG, "save button clicked")
+            onLocationSelected()
+        }
 
         return binding.root
     }
@@ -80,6 +85,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun onLocationSelected() {
+        Log.d(
+            TAG, "Selected location: lat = ${userSelectedPoi?.latLng?.latitude}, " +
+                    "long = ${userSelectedPoi?.latLng?.longitude}, " +
+                    "name = ${userSelectedPoi?.name}, " +
+                    "placeId = ${userSelectedPoi?.placeId}; " +
+                    "POI obj = ${userSelectedPoi.toString()}"
+        )
+
+        // Navigate to SaveReminderFragment and save POI data in viewModel
+        _viewModel.onLocationSelected(userSelectedPoi!!)
         //        TODO: When the user confirms on the selected location,
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
@@ -138,12 +153,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .snippet(snippet)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
             )
+
+            userSelectedPoi = PointOfInterest(latLng, null, getString(R.string.dropped_pin))
             setSaveLocationButtonEnabled(true)
         }
     }
 
     private fun setSaveLocationButtonEnabled(isEnabled: Boolean) {
         binding.saveLocation.isEnabled = isEnabled
+        Log.d(TAG, "is save button enabled = {${binding.saveLocation.isEnabled}}")
     }
 
     private fun setPoiClick(map: GoogleMap) {
@@ -155,6 +173,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
             poiMarker?.showInfoWindow()
 
+            userSelectedPoi = poi
             setSaveLocationButtonEnabled(true)
         }
     }
