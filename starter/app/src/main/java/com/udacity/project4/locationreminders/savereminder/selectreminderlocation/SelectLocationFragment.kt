@@ -8,6 +8,7 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.*
@@ -22,6 +23,7 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
@@ -51,8 +53,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
-//        TODO: add style to the map
-//        TODO: put a marker to location that the user selected
 
 //        TODO: call this function after the user confirms on the selected location
         onLocationSelected()
@@ -63,11 +63,20 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showSelectLocationDialog()
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    private fun showSelectLocationDialog() {
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setMessage(R.string.select_location)
+        dialogBuilder.setPositiveButton(R.string.dialog_button_ok, null)
+        dialogBuilder.show()
     }
 
     private fun onLocationSelected() {
@@ -105,8 +114,49 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         Log.d(TAG, "onMapReady")
         map = googleMap
+
+        setMapLongClick(map)
+        setPoiClick(map)
         setMapStyle(map)
+
         enableMyLocation()
+    }
+
+    private fun setMapLongClick(map: GoogleMap) {
+        map.setOnMapLongClickListener { latLng ->
+            // A Snippet is Additional text that's displayed below the title.
+            val snippet = String.format(
+                Locale.getDefault(),
+                "Lat: %1$.5f, Long: %2$.5f",
+                latLng.latitude,
+                latLng.longitude
+            )
+            map.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title(getString(R.string.dropped_pin))
+                    .snippet(snippet)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+            )
+            setSaveLocationButtonEnabled(true)
+        }
+    }
+
+    private fun setSaveLocationButtonEnabled(isEnabled: Boolean) {
+        binding.saveLocation.isEnabled = isEnabled
+    }
+
+    private fun setPoiClick(map: GoogleMap) {
+        map.setOnPoiClickListener { poi ->
+            val poiMarker = map.addMarker(
+                MarkerOptions()
+                    .position(poi.latLng)
+                    .title(poi.name)
+            )
+            poiMarker?.showInfoWindow()
+
+            setSaveLocationButtonEnabled(true)
+        }
     }
 
     private fun setMapStyle(map: GoogleMap) {
