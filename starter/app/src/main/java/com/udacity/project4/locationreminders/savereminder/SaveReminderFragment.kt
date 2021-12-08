@@ -43,7 +43,7 @@ class SaveReminderFragment : BaseFragment() {
 
     private lateinit var geofencingClient: GeofencingClient
 
-    val GEOFENCE_EXPIRATION_IN_MILLISECONDS: Long = TimeUnit.HOURS.toMillis(1)
+    val GEOFENCE_EXPIRATION_IN_MILLISECONDS: Long = TimeUnit.DAYS.toMillis(1)
 
     // A PendingIntent for the Broadcast Receiver that handles geofence transitions.
     private val geofencePendingIntent: PendingIntent by lazy {
@@ -235,31 +235,27 @@ class SaveReminderFragment : BaseFragment() {
             .addGeofence(geofence)
             .build()
 
-        geofencingClient.removeGeofences(geofencePendingIntent)?.run {
-            addOnCompleteListener {
-                geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
-                    addOnSuccessListener {
-                        Log.d(TAG, "addGeofence -> success")
-                        Toast.makeText(
-                            requireContext(), "Geofence added!",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        Log.e("Add Geofence", geofence.requestId)
-                        _viewModel.validateAndSaveReminder(reminderDataItem)
-                    }
-                    addOnFailureListener {
-                        Log.d(TAG, "addGeofence -> failure")
-                        Toast.makeText(
-                            requireContext(), R.string.geofences_not_added,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        if ((it.message != null)) {
-                            Log.w(TAG, it.message!!)
-                        }
-                        _viewModel.validateAndSaveReminder(reminderDataItem)
-                    }
+        geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
+            addOnSuccessListener {
+                Log.d(TAG, "addGeofence -> success")
+                Toast.makeText(
+                    requireContext(), "Geofence added!",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Log.e("Add Geofence", geofence.requestId)
+                _viewModel.validateAndSaveReminder(reminderDataItem)
+            }
+            addOnFailureListener {
+                Log.d(TAG, "addGeofence -> failure")
+                Toast.makeText(
+                    requireContext(), R.string.geofences_not_added,
+                    Toast.LENGTH_SHORT
+                ).show()
+                if ((it.message != null)) {
+                    Log.w(TAG, it.message!!)
                 }
+                _viewModel.validateAndSaveReminder(reminderDataItem)
             }
         }
     }
