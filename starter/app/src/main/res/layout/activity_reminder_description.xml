@@ -10,24 +10,66 @@
             type="com.udacity.project4.locationreminders.reminderslist.ReminderDataItem" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        tools:context=".locationreminders.ReminderDescriptionActivity">
-        <!--TODO: add the design of the reminder details-->
+        android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/reminderTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:gravity="center"
-            android:text="Reminder Details"
-            android:textSize="@dimen/text_size_large"
+            android:text="@={reminderDataItem.title}"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Reminder Title" />
+
+        <TextView
+            android:id="@+id/reminderDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@={reminderDataItem.description}"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintEnd_toEndOf="@+id/reminderTitle"
+            app:layout_constraintStart_toStartOf="@+id/reminderTitle"
+            app:layout_constraintTop_toBottomOf="@+id/reminderTitle"
+            tools:text="Reminder Description" />
+
+        <TextView
+            android:id="@+id/reminderLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@={reminderDataItem.location}"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintEnd_toEndOf="@+id/reminderTitle"
+            app:layout_constraintStart_toStartOf="@+id/reminderTitle"
+            app:layout_constraintTop_toBottomOf="@+id/reminderDescription"
+            tools:text="Reminder Location" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/reminderLocation"
+            tools:context=".SelectLocationFragment" />
 
-    </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
