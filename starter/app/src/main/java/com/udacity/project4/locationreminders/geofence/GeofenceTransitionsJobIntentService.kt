@@ -13,6 +13,9 @@ import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
 
+// This class is not in use anymore.
+// See newest Android guidelines for implementing Geofence listener:
+// https://developer.android.com/training/location/geofencing
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     private var coroutineJob: Job = Job()

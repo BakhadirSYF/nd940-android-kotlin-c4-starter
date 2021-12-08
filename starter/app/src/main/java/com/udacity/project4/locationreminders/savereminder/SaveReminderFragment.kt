@@ -207,7 +207,6 @@ class SaveReminderFragment : BaseFragment() {
         }
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
-                // TODO: add geofence; rename function name
                 addGeofence()
             }
         }
@@ -219,7 +218,7 @@ class SaveReminderFragment : BaseFragment() {
      */
     @SuppressLint("MissingPermission")
     private fun addGeofence() {
-        Log.d(TAG, "addGeofence")
+        Log.d(TAG, "addGeofence(); geofence requestId = ${reminderDataItem.id}")
         val geofence = Geofence.Builder()
             .setRequestId(reminderDataItem.id)
             .setCircularRegion(
