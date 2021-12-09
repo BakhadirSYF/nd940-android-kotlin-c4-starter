@@ -50,7 +50,7 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
     }
 
     /**
-     * Inform the user that there's not any data if the remindersList is empty
+     * Inform the user that there's no data if the remindersList is empty
      */
     private fun invalidateShowNoData() {
         showNoData.value = remindersList.value == null || remindersList.value!!.isEmpty()
