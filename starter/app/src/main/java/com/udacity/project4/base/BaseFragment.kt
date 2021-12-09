@@ -20,8 +20,8 @@ abstract class BaseFragment : Fragment() {
         _viewModel.showErrorMessage.observe(this, Observer {
             Toast.makeText(activity, it, Toast.LENGTH_LONG).show()
         })
-        _viewModel.showToast.observe(this, Observer {
-            Toast.makeText(activity, it, Toast.LENGTH_LONG).show()
+        _viewModel.showToastInt.observe(this, Observer {
+            Toast.makeText(activity, getString(it), Toast.LENGTH_LONG).show()
         })
         _viewModel.showSnackBar.observe(this, Observer {
             Snackbar.make(this.view!!, it, Snackbar.LENGTH_LONG).show()

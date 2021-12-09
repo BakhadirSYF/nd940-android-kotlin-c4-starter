@@ -6,6 +6,8 @@ import com.udacity.project4.locationreminders.data.dto.Result
 //Use FakeDataSource that acts as a test double to the LocalDataSource
 class FakeDataSource : ReminderDataSource {
 
+    var data: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
+
 //    TODO: Create a fake data source to act as a double to the real data source
 
     override suspend fun getReminders(): Result<List<ReminderDTO>> {
@@ -22,6 +24,12 @@ class FakeDataSource : ReminderDataSource {
 
     override suspend fun deleteAllReminders() {
         TODO("delete all the reminders")
+    }
+
+    fun addReminders(vararg reminders: ReminderDTO) {
+        for(reminder in reminders) {
+            data[reminder.id] = reminder
+        }
     }
 
 
