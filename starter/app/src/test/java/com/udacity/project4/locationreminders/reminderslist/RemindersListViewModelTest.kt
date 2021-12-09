@@ -23,8 +23,6 @@ import org.koin.core.context.stopKoin
 @ExperimentalCoroutinesApi
 class RemindersListViewModelTest {
 
-    //TODO: provide testing to the RemindersListViewModel and its live data objects
-
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -106,6 +104,18 @@ class RemindersListViewModelTest {
         // THEN - snackbar value updated
         val snackbarText = remindersListViewModel.showSnackBar.getOrAwaitValue()
         assertThat(snackbarText, `is`(ERROR_MESSAGE))
+    }
+
+    @Test
+    fun loadReminders_showLoadingIsFalse() {
+        // GIVEN - a fresh viewModel
+        dataSource.isResultSuccess = false
+
+        // WHEN - loading reminders
+        remindersListViewModel.loadReminders()
+
+        // THEN - showLoading is false
+        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
     }
 
 }

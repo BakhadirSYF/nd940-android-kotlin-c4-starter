@@ -21,7 +21,7 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
     fun loadReminders() {
         showLoading.value = true
         viewModelScope.launch {
-            //interacting with the dataSource has to be through a coroutine
+            // Interacting with the dataSource has to be through a coroutine
             val result = dataSource.getReminders()
             showLoading.postValue(false)
             when (result) {
