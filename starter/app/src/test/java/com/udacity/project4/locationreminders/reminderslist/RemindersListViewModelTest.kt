@@ -36,7 +36,7 @@ class RemindersListViewModelTest {
     var instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
-    fun setupViewModel() {
+    fun setup() {
         // Initialize FirebaseApp
         FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().targetContext)
 
@@ -59,7 +59,7 @@ class RemindersListViewModelTest {
     @Test
     fun loadReminders_success_remindersListHasData() {
         // GIVEN - a fresh viewModel
-        dataSource.isResultSuccess = true
+        dataSource.shouldReturnError = false
 
         // WHEN - loading reminders
         remindersListViewModel.loadReminders()
@@ -72,7 +72,7 @@ class RemindersListViewModelTest {
     @Test
     fun loadReminders_success_showNoDataIsFalse() {
         // GIVEN - a fresh viewModel
-        dataSource.isResultSuccess = true
+        dataSource.shouldReturnError = false
 
         // WHEN - loading reminders
         remindersListViewModel.loadReminders()
@@ -84,7 +84,7 @@ class RemindersListViewModelTest {
     @Test
     fun loadReminders_error_showNoDataIsTrue() {
         // GIVEN - a fresh viewModel
-        dataSource.isResultSuccess = false
+        dataSource.shouldReturnError = true
 
         // WHEN - loading reminders
         remindersListViewModel.loadReminders()
@@ -96,7 +96,7 @@ class RemindersListViewModelTest {
     @Test
     fun loadReminders_error_snackbarUpdated() {
         // GIVEN - a fresh viewModel
-        dataSource.isResultSuccess = false
+        dataSource.shouldReturnError = true
 
         // WHEN - loading reminders
         remindersListViewModel.loadReminders()
@@ -109,7 +109,7 @@ class RemindersListViewModelTest {
     @Test
     fun loadReminders_showLoadingIsFalse() {
         // GIVEN - a fresh viewModel
-        dataSource.isResultSuccess = false
+        dataSource.shouldReturnError = false
 
         // WHEN - loading reminders
         remindersListViewModel.loadReminders()

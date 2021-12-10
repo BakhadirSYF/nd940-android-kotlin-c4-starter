@@ -40,7 +40,7 @@ class SaveReminderViewModelTest {
     var instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
-    fun setupViewModel() {
+    fun setup() {
         // Initialize FirebaseApp
         FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().targetContext)
 
