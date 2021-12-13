@@ -4,14 +4,14 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 
 //Use FakeDataSource that acts as a test double to the LocalDataSource
-class FakeDataSource : ReminderDataSource {
+class FakeAndroidDataSource : ReminderDataSource {
     //    private var data: MutableList<ReminderDTO> = mutableListOf()
     private var data: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
     var shouldReturnError: Boolean = false
 
     override suspend fun getReminders(): Result<List<ReminderDTO>> {
         return when (shouldReturnError) {
-            true -> Result.Error(ERROR_MESSAGE, ERROR_STATUS_CODE)
+            true -> Result.Error(ERROR_MESSAGE_, ERROR_STATUS_CODE_)
             else -> {
                 Result.Success(data.values.toList())
             }
@@ -24,11 +24,10 @@ class FakeDataSource : ReminderDataSource {
 
     override suspend fun getReminder(id: String): Result<ReminderDTO> {
         return Result.Success(data[id] as ReminderDTO)
-
     }
 
     override suspend fun deleteAllReminders() {
-        // not in use
+        data.clear()
     }
 
     fun addReminders(vararg reminders: ReminderDTO) {
@@ -38,5 +37,5 @@ class FakeDataSource : ReminderDataSource {
     }
 }
 
-const val ERROR_MESSAGE = "ERROR"
-const val ERROR_STATUS_CODE = -1
+const val ERROR_MESSAGE_ = "ERROR"
+const val ERROR_STATUS_CODE_ = -1
