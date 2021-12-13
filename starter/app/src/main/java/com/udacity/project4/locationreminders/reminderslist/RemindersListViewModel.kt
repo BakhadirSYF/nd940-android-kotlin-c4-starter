@@ -1,13 +1,12 @@
 package com.udacity.project4.locationreminders.reminderslist
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.udacity.project4.FirebaseUserLiveData
 import com.udacity.project4.base.BaseViewModel
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.locationreminders.data.dto.Result.Success
+import com.udacity.project4.locationreminders.data.dto.Result.Error
 import kotlinx.coroutines.launch
 
 class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseViewModel() {
@@ -25,7 +24,7 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
             val result = dataSource.getReminders()
             showLoading.postValue(false)
             when (result) {
-                is Result.Success<*> -> {
+                is Success<*> -> {
                     val dataList = ArrayList<ReminderDataItem>()
                     dataList.addAll((result.data as List<ReminderDTO>).map { reminder ->
                         //map the reminder data from the DB to the be ready to be displayed on the UI
@@ -40,7 +39,7 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
                     })
                     remindersList.value = dataList
                 }
-                is Result.Error ->
+                is Error ->
                     showSnackBar.value = result.message
             }
 
@@ -54,17 +53,5 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
      */
     private fun invalidateShowNoData() {
         showNoData.value = remindersList.value == null || remindersList.value!!.isEmpty()
-    }
-
-    enum class AuthenticationState {
-        AUTHENTICATED, UNAUTHENTICATED
-    }
-
-    val authenticationState = FirebaseUserLiveData().map { user ->
-        if (user != null) {
-            AuthenticationState.AUTHENTICATED
-        } else {
-            AuthenticationState.UNAUTHENTICATED
-        }
     }
 }

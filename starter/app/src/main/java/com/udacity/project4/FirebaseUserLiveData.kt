@@ -16,6 +16,7 @@
 
 package com.udacity.project4
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.LiveData
@@ -30,21 +31,29 @@ import androidx.lifecycle.LiveData
  * removing the authStateListener.
  */
 class FirebaseUserLiveData : LiveData<FirebaseUser?>() {
+
+    companion object {
+        const val TAG = "FirebaseUserLiveData"
+    }
+
     private val firebaseAuth = FirebaseAuth.getInstance()
 
     private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        Log.d(TAG, "authStateListener")
         value = firebaseAuth.currentUser
     }
 
     // When this object has an active observer, start observing the FirebaseAuth state to see if
     // there is currently a logged in user.
     override fun onActive() {
+        Log.d(TAG, "onActive")
         firebaseAuth.addAuthStateListener(authStateListener)
     }
 
     // When this object no longer has an active observer, stop observing the FirebaseAuth state to
     // prevent memory leaks.
     override fun onInactive() {
+        Log.d(TAG, "onInactive")
         firebaseAuth.removeAuthStateListener(authStateListener)
     }
 }

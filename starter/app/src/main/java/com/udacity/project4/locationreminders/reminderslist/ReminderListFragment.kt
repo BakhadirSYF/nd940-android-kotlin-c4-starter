@@ -1,12 +1,11 @@
 package com.udacity.project4.locationreminders.reminderslist
 
 import android.content.Intent
+import android.content.Intent.*
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.R
 import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.base.BaseFragment
@@ -56,27 +55,10 @@ class ReminderListFragment : BaseFragment() {
         }
     }
 
-    private fun observeAuthenticationState() {
-        _viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
-            when (authenticationState) {
-                RemindersListViewModel.AuthenticationState.AUTHENTICATED -> {
-                    Log.d(TAG, "observeAuthenticationState -> AUTHENTICATED")
-                    _viewModel.showLoading.value = false
-                    _viewModel.loadReminders()
-                }
-                else -> {
-                    Log.d(TAG, "observeAuthenticationState -> NOT AUTHENTICATED")
-                    _viewModel.showLoading.value = false
-                    val intent = Intent(context, AuthenticationActivity::class.java)
-                    startActivity(intent)
-                }
-            }
-        })
-    }
-
     override fun onResume() {
         super.onResume()
-        observeAuthenticationState()
+        // Load the reminders list on the ui
+        _viewModel.loadReminders()
     }
 
     private fun navigateToAddReminder() {
@@ -98,7 +80,11 @@ class ReminderListFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
-                AuthUI.getInstance().signOut(requireContext())
+                FirebaseAuth.getInstance().signOut()
+                val intent = Intent(requireContext(), AuthenticationActivity::class.java)
+                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP)
+                intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)

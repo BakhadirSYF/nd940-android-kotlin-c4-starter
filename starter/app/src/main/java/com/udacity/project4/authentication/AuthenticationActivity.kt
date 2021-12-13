@@ -6,12 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import com.udacity.project4.R
 import com.udacity.project4.databinding.ActivityAuthenticationBinding
 import com.udacity.project4.locationreminders.RemindersActivity
 
@@ -26,11 +24,13 @@ class AuthenticationActivity : AppCompatActivity() {
         const val SIGN_IN_REQUEST_CODE = 1001
     }
 
+    val viewModel: AuthenticationActivityViewModel by viewModels()
+
     private lateinit var binding: ActivityAuthenticationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
 
         binding = ActivityAuthenticationBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -42,6 +42,28 @@ class AuthenticationActivity : AppCompatActivity() {
 //          TODO: a bonus is to customize the sign in flow to look nice using :
         //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
 
+    }
+
+    override fun onResume() {
+        Log.d(TAG, "onResume")
+        super.onResume()
+        observeAuthenticationState()
+    }
+
+    private fun observeAuthenticationState() {
+        Log.d(TAG, "observeAuthenticationState")
+        viewModel.authenticationState.observe(this, Observer { authenticationState ->
+            when (authenticationState) {
+                AuthenticationActivityViewModel.AuthenticationState.AUTHENTICATED -> {
+                    Log.d(TAG, "observeAuthenticationState -> AUTHENTICATED")
+                    val intent = Intent(this, RemindersActivity::class.java)
+                    startActivity(intent)
+                }
+                else -> {
+                    Log.d(TAG, "observeAuthenticationState -> NOT AUTHENTICATED")
+                }
+            }
+        })
     }
 
     private fun launchLoginFlow() {
@@ -61,12 +83,12 @@ class AuthenticationActivity : AppCompatActivity() {
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build(),
-            AuthenticationActivity.SIGN_IN_REQUEST_CODE
+            SIGN_IN_REQUEST_CODE
         )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d(TAG, "launchLoginFlow")
+        Log.d(TAG, "onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SIGN_IN_REQUEST_CODE) {
             val response = IdpResponse.fromResultIntent(data)
@@ -76,8 +98,6 @@ class AuthenticationActivity : AppCompatActivity() {
                     TAG,
                     "Successfully signed in user ${FirebaseAuth.getInstance().currentUser?.displayName}!"
                 )
-                val intent = Intent(this, RemindersActivity::class.java)
-                startActivity(intent)
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
