@@ -25,6 +25,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import com.udacity.project4.locationreminders.data.ERROR_MESSAGE_
 import com.udacity.project4.locationreminders.data.local.LocalDB
+import org.junit.After
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -64,6 +65,11 @@ class ReminderListFragmentTest {
             modules(listOf(myModule))
         }
 
+    }
+
+    @After
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test

@@ -102,6 +102,13 @@ class SaveReminderFragment : BaseFragment() {
                     _viewModel.longitude.value
                 )
 
+                Log.d(
+                    TAG, "POI obj = ${_viewModel.selectedPOI.value.toString()}," +
+                            "location title = ${_viewModel.reminderSelectedLocationStr.value}, " +
+                            "lat = ${_viewModel.latitude.value}, " +
+                            "long = ${_viewModel.longitude.value}"
+                )
+
                 // Add a geofencing request
                 if (foregroundAndBackgroundLocationPermissionApproved()) {
                     checkDeviceLocationSettingsAndStartGeofence()
@@ -111,16 +118,7 @@ class SaveReminderFragment : BaseFragment() {
             } else { // Location is not selected, show snackbar
                 _viewModel.onNoPoiSelected()
             }
-
-
         }
-
-        Log.d(
-            TAG, "POI obj = ${_viewModel.selectedPOI.value.toString()}," +
-                    "location title = ${_viewModel.reminderSelectedLocationStr.value}, " +
-                    "lat = ${_viewModel.latitude.value}, " +
-                    "long = ${_viewModel.longitude.value}"
-        )
     }
 
     /*

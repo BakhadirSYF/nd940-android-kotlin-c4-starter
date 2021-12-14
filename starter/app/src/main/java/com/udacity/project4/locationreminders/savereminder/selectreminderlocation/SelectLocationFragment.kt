@@ -95,9 +95,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // Navigate to SaveReminderFragment and save POI data in viewModel
         _viewModel.onLocationSelected(userSelectedPoi!!)
-        //        TODO: When the user confirms on the selected location,
-        //         send back the selected location details to the view model
-        //         and navigate back to the previous fragment to save the reminder and add the geofence
     }
 
 

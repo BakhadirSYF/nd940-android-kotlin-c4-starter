@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.example.android.architecture.blueprints.todoapp.util.wrapEspressoIdlingResource
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
@@ -74,7 +75,9 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent, CoroutineS
         // Interaction to the repository has to be through a coroutine scope
         CoroutineScope(coroutineContext).launch(SupervisorJob()) {
             //get the reminder with the request id
-            val result = remindersLocalRepository.getReminder(requestId)
+            val result = wrapEspressoIdlingResource {
+                remindersLocalRepository.getReminder(requestId)
+            }
             if (result is Result.Success<ReminderDTO>) {
                 val reminderDTO = result.data
                 //send a notification to the user with the reminder details

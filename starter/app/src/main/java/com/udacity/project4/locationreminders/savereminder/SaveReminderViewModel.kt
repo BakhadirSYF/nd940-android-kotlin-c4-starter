@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders.savereminder
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.android.architecture.blueprints.todoapp.util.wrapEspressoIdlingResource
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseViewModel
@@ -46,16 +47,20 @@ class SaveReminderViewModel(private val dataSource: ReminderDataSource) : BaseVi
     fun saveReminder(reminderData: ReminderDataItem) {
         showLoading.value = true
         viewModelScope.launch {
-            dataSource.saveReminder(
-                ReminderDTO(
-                    reminderData.title,
-                    reminderData.description,
-                    reminderData.location,
-                    reminderData.latitude,
-                    reminderData.longitude,
-                    reminderData.id
+
+            wrapEspressoIdlingResource {
+                dataSource.saveReminder(
+                    ReminderDTO(
+                        reminderData.title,
+                        reminderData.description,
+                        reminderData.location,
+                        reminderData.latitude,
+                        reminderData.longitude,
+                        reminderData.id
+                    )
                 )
-            )
+            }
+
             showLoading.value = false
             showToastInt.value = R.string.reminder_saved
             navigationCommand.value = NavigationCommand.Back

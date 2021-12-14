@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders.reminderslist
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.android.architecture.blueprints.todoapp.util.wrapEspressoIdlingResource
 import com.udacity.project4.base.BaseViewModel
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -21,7 +22,9 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
         showLoading.value = true
         viewModelScope.launch {
             // Interacting with the dataSource has to be through a coroutine
-            val result = dataSource.getReminders()
+            val result = wrapEspressoIdlingResource {
+                dataSource.getReminders()
+            }
             showLoading.postValue(false)
             when (result) {
                 is Success<*> -> {
