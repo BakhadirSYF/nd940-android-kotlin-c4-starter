@@ -55,7 +55,7 @@ class SaveReminderFragment : BaseFragment() {
     private val runningQOrLater = android.os.Build.VERSION.SDK_INT >=
             android.os.Build.VERSION_CODES.Q
 
-    //Get the view model this time as a single to be shared with the another fragment
+    // Get the view model this time as a single to be shared with the another fragment
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSaveReminderBinding
     private lateinit var reminderDataItem: ReminderDataItem
@@ -91,29 +91,28 @@ class SaveReminderFragment : BaseFragment() {
         }
 
         binding.saveReminder.setOnClickListener {
-            val title = _viewModel.reminderTitle.value
-            val description = _viewModel.reminderDescription.value
-            val location = _viewModel.reminderSelectedLocationStr.value
-            val latitude = _viewModel.latitude.value
-            val longitude = _viewModel.longitude.value
 
-            reminderDataItem = ReminderDataItem(
-                title,
-                description,
-                location,
-                latitude,
-                longitude
-            )
+            // Check if location was selected
+            if (_viewModel.isLocationSelected()) {
+                reminderDataItem = ReminderDataItem(
+                    _viewModel.reminderTitle.value,
+                    _viewModel.reminderDescription.value,
+                    _viewModel.reminderSelectedLocationStr.value,
+                    _viewModel.latitude.value,
+                    _viewModel.longitude.value
+                )
 
-            // 1) add a geofencing request
-            if (foregroundAndBackgroundLocationPermissionApproved()) {
-                checkDeviceLocationSettingsAndStartGeofence()
-            } else {
-                requestForegroundAndBackgroundLocationPermissions()
+                // Add a geofencing request
+                if (foregroundAndBackgroundLocationPermissionApproved()) {
+                    checkDeviceLocationSettingsAndStartGeofence()
+                } else {
+                    requestForegroundAndBackgroundLocationPermissions()
+                }
+            } else { // Location is not selected, show snackbar
+                _viewModel.onNoPoiSelected()
             }
 
-            // 2) save the reminder to the local db
-//            _viewModel.validateAndSaveReminder(reminderDataItem)
+
         }
 
         Log.d(
@@ -255,7 +254,6 @@ class SaveReminderFragment : BaseFragment() {
                 if ((it.message != null)) {
                     Log.w(TAG, it.message!!)
                 }
-                _viewModel.validateAndSaveReminder(reminderDataItem)
             }
         }
     }

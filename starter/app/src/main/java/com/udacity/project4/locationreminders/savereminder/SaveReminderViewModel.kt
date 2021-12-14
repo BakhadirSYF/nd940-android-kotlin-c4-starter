@@ -11,7 +11,7 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import kotlinx.coroutines.launch
 
-class SaveReminderViewModel(val dataSource: ReminderDataSource) : BaseViewModel() {
+class SaveReminderViewModel(private val dataSource: ReminderDataSource) : BaseViewModel() {
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
     val reminderSelectedLocationStr = MutableLiveData<String>()
@@ -71,15 +71,16 @@ class SaveReminderViewModel(val dataSource: ReminderDataSource) : BaseViewModel(
             return false
         }
 
+        if (reminderData.description.isNullOrEmpty()) {
+            showSnackBarInt.value = R.string.err_enter_description
+            return false
+        }
+
         if (reminderData.location.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_select_location
             return false
         }
 
-        if (reminderData.description.isNullOrEmpty()) {
-            showSnackBarInt.value = R.string.err_enter_description
-            return false
-        }
         return true
     }
 
@@ -90,5 +91,13 @@ class SaveReminderViewModel(val dataSource: ReminderDataSource) : BaseViewModel(
         longitude.value = userSelectedPoi.latLng.longitude
 
         navigationCommand.value = NavigationCommand.Back
+    }
+
+    fun isLocationSelected(): Boolean {
+        return selectedPOI.value != null
+    }
+
+    fun onNoPoiSelected() {
+        showSnackBarInt.value = R.string.err_select_location
     }
 }
