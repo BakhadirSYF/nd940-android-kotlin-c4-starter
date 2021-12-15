@@ -39,7 +39,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent, CoroutineS
         get() = Dispatchers.IO
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "onReceive")
         if (intent.action == ACTION_GEOFENCE_EVENT) {
             val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
@@ -68,8 +67,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent, CoroutineS
     }
 
     private fun getReminderFromDbAndSendRequest(context: Context, requestId: String) {
-        Log.d(TAG, "getReminderFromDbAndSendRequest(..); requestId = $requestId")
-
         // Get the local repository instance
         val remindersLocalRepository: ReminderDataSource by inject()
         // Interaction to the repository has to be through a coroutine scope

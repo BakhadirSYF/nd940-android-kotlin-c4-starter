@@ -58,7 +58,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setDisplayHomeAsUpEnabled(true)
 
         binding.saveLocation.setOnClickListener {
-            Log.d(TAG, "save button clicked")
             onLocationSelected()
         }
 
@@ -85,14 +84,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun onLocationSelected() {
-        Log.d(
-            TAG, "Selected location: lat = ${userSelectedPoi?.latLng?.latitude}, " +
-                    "long = ${userSelectedPoi?.latLng?.longitude}, " +
-                    "name = ${userSelectedPoi?.name}, " +
-                    "placeId = ${userSelectedPoi?.placeId}; " +
-                    "POI obj = ${userSelectedPoi.toString()}"
-        )
-
         // Navigate to SaveReminderFragment and save POI data in viewModel
         _viewModel.onLocationSelected(userSelectedPoi!!)
     }
@@ -124,7 +115,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        Log.d(TAG, "onMapReady")
         map = googleMap
 
         setMapLongClick(map)
@@ -158,7 +148,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun setSaveLocationButtonEnabled(isEnabled: Boolean) {
         binding.saveLocation.isEnabled = isEnabled
-        Log.d(TAG, "is save button enabled = {${binding.saveLocation.isEnabled}}")
     }
 
     private fun setPoiClick(map: GoogleMap) {
@@ -199,7 +188,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        Log.d(TAG, "onRequestPermissionsResult")
         // Check if location permissions are granted and if so enable the
         // location data layer.
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
@@ -210,7 +198,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun enableMyLocation() {
-        Log.d(TAG, "enableMyLocation")
         if (ActivityCompat.checkSelfPermission(
                 requireActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -230,7 +217,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map.isMyLocationEnabled = true
 
         fusedLocationClient.lastLocation.addOnSuccessListener { lastKnownLocation: Location? ->
-            Log.d(TAG, "OnSuccessListener")
             if (lastKnownLocation != null) {
                 currentLocation = lastKnownLocation
 

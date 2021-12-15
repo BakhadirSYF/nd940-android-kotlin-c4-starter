@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.udacity.project4.BuildConfig
@@ -19,7 +18,6 @@ private const val TAG = "NotificationUtils"
 
 fun sendNotification(context: Context, reminderDataItem: ReminderDataItem) {
 
-    Log.d(TAG, "sendNotification")
 
     val notificationManager = context
         .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

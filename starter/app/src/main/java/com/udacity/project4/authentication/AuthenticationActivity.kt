@@ -30,7 +30,6 @@ class AuthenticationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate")
 
         binding = ActivityAuthenticationBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -41,29 +40,24 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume")
         super.onResume()
         observeAuthenticationState()
     }
 
     private fun observeAuthenticationState() {
-        Log.d(TAG, "observeAuthenticationState")
         viewModel.authenticationState.observe(this, Observer { authenticationState ->
             when (authenticationState) {
                 AuthenticationActivityViewModel.AuthenticationState.AUTHENTICATED -> {
-                    Log.d(TAG, "observeAuthenticationState -> AUTHENTICATED")
                     val intent = Intent(this, RemindersActivity::class.java)
                     startActivity(intent)
                 }
                 else -> {
-                    Log.d(TAG, "observeAuthenticationState -> NOT AUTHENTICATED")
                 }
             }
         })
     }
 
     private fun launchLoginFlow() {
-        Log.d(TAG, "launchLoginFlow")
         // Give users the option to sign in / register with their email or Google account.
         // If users choose to register with their email,
         // they will need to create a password as well.
@@ -84,7 +78,6 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d(TAG, "onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SIGN_IN_REQUEST_CODE) {
             val response = IdpResponse.fromResultIntent(data)

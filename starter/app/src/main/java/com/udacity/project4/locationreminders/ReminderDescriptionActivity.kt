@@ -3,7 +3,6 @@ package com.udacity.project4.locationreminders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -40,7 +39,6 @@ class ReminderDescriptionActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate")
         binding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_reminder_description
@@ -56,7 +54,6 @@ class ReminderDescriptionActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        Log.d(TAG, "onMapReady")
         map = googleMap
 
         val currLatLong = LatLng(reminderDataItem.latitude!!, reminderDataItem.longitude!!)
