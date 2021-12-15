@@ -28,7 +28,6 @@ import org.koin.core.context.stopKoin
 @SmallTest
 class RemindersDaoTest {
 
-    //    TODO: Add testing implementation to the RemindersDao.kt
     private lateinit var database: RemindersDatabase
 
     // Executes each task synchronously using Architecture Components.
