@@ -25,7 +25,7 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
             val result = wrapEspressoIdlingResource {
                 dataSource.getReminders()
             }
-            showLoading.postValue(false)
+//            showLoading.postValue(false)
             when (result) {
                 is Success<*> -> {
                     val dataList = ArrayList<ReminderDataItem>()
@@ -41,9 +41,12 @@ class RemindersListViewModel(private val dataSource: ReminderDataSource) : BaseV
                         )
                     })
                     remindersList.value = dataList
+                    showLoading.value = false
                 }
-                is Error ->
+                is Error -> {
                     showSnackBar.value = result.message
+                    showLoading.value = false
+                }
             }
 
             //check if no data has to be shown
