@@ -135,4 +135,23 @@ class SaveReminderViewModelTest {
         assertEquals(NavigationCommand.Back, saveReminderViewModel.navigationCommand.getOrAwaitValue())
     }
 
+    @Test
+    fun saveReminder_loading() {
+        // Pause dispatcher so you can verify initial values.
+        mainCoroutineRule.pauseDispatcher()
+
+        // Save reminder
+        val reminderDataItem = ReminderDataItem("title", "description", "location", 100.0, 100.0)
+        saveReminderViewModel.validateAndSaveReminder(reminderDataItem)
+
+        // Then assert that the progress indicator is shown.
+        assertThat(saveReminderViewModel.showLoading.getOrAwaitValue(), `is`(true))
+
+        // Execute pending coroutines actions.
+        mainCoroutineRule.resumeDispatcher()
+
+        // Then assert that the progress indicator is hidden.
+        assertThat(saveReminderViewModel.showLoading.getOrAwaitValue(), `is`(false))
+    }
+
 }

@@ -11,6 +11,7 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -115,6 +116,24 @@ class RemindersListViewModelTest {
         remindersListViewModel.loadReminders()
 
         // THEN - showLoading is false
+        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
+    }
+
+    @Test
+    fun loadReminders_loading() {
+        // Pause dispatcher so you can verify initial values.
+        mainCoroutineRule.pauseDispatcher()
+
+        // Load reminders
+        remindersListViewModel.loadReminders()
+
+        // Then assert that the progress indicator is shown.
+        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
+
+        // Execute pending coroutines actions.
+        mainCoroutineRule.resumeDispatcher()
+
+        // Then assert that the progress indicator is hidden.
         assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
     }
 
