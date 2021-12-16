@@ -70,7 +70,7 @@ class SaveReminderViewModel(private val dataSource: ReminderDataSource) : BaseVi
     /**
      * Validate the entered data and show error to the user if there's any invalid data
      */
-    private fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
+    fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
         if (reminderData.title.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_enter_title
             return false
@@ -98,20 +98,11 @@ class SaveReminderViewModel(private val dataSource: ReminderDataSource) : BaseVi
         navigationCommand.value = NavigationCommand.Back
     }
 
-    fun onPermissionDenied(showRationale: Boolean) {
-        showSnackBarInt.value = when (showRationale) {
-            true -> R.string.permission_denied_explanation
-            false -> R.string.permission_denied_enable_manually
-        }
-
+    fun onNavBack() {
         navigationCommand.value = NavigationCommand.Back
     }
 
     fun isLocationSelected(): Boolean {
         return selectedPOI.value != null
-    }
-
-    fun onNoPoiSelected() {
-        showSnackBarInt.value = R.string.err_select_location
     }
 }

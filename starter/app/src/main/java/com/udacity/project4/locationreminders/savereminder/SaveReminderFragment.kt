@@ -83,31 +83,28 @@ class SaveReminderFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         binding.selectLocation.setOnClickListener {
-            // Navigate to another fragment to get the user location
+            // Navigate to SelectLocationFragment to get the user location
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
         }
 
         binding.saveReminder.setOnClickListener {
+            reminderDataItem = ReminderDataItem(
+                _viewModel.reminderTitle.value,
+                _viewModel.reminderDescription.value,
+                _viewModel.reminderSelectedLocationStr.value,
+                _viewModel.latitude.value,
+                _viewModel.longitude.value
+            )
 
-            // Check if location was selected
-            if (_viewModel.isLocationSelected()) {
-                reminderDataItem = ReminderDataItem(
-                    _viewModel.reminderTitle.value,
-                    _viewModel.reminderDescription.value,
-                    _viewModel.reminderSelectedLocationStr.value,
-                    _viewModel.latitude.value,
-                    _viewModel.longitude.value
-                )
-
+            // Validate data
+            if (_viewModel.validateEnteredData(reminderDataItem)) {
                 // Add a geofencing request
                 if (foregroundAndBackgroundLocationPermissionApproved()) {
                     checkDeviceLocationSettingsAndStartGeofence()
                 } else {
                     requestForegroundAndBackgroundLocationPermissions()
                 }
-            } else { // Location is not selected, show snackbar
-                _viewModel.onNoPoiSelected()
             }
         }
     }
@@ -151,11 +148,7 @@ class SaveReminderFragment : BaseFragment() {
             }
             else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
         }
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            permissionsArray,
-            resultCode
-        )
+        requestPermissions(permissionsArray, resultCode)
     }
 
     /*
@@ -192,6 +185,8 @@ class SaveReminderFragment : BaseFragment() {
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
                 addGeofence()
+            } else {
+                Log.d(TAG, "checkDeviceLocationSettingsAndStartGeofence -> it.!isSuccessful")
             }
         }
     }
@@ -202,6 +197,7 @@ class SaveReminderFragment : BaseFragment() {
      */
     @SuppressLint("MissingPermission")
     private fun addGeofence() {
+        Log.d(TAG, "addGeofence")
         val geofence = Geofence.Builder()
             .setRequestId(reminderDataItem.id)
             .setCircularRegion(
@@ -249,16 +245,36 @@ class SaveReminderFragment : BaseFragment() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+
+        var isLocationPermissionDenied = false
+        var isBackgroundLocationPermissionDenied = false
+
+        if (grantResults.isNotEmpty()) {
+            isLocationPermissionDenied =
+                grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED
+            if (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE) {
+                isBackgroundLocationPermissionDenied =
+                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+                            PackageManager.PERMISSION_DENIED
+            }
+        }
+
         if (
             grantResults.isEmpty() ||
-            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
+            isLocationPermissionDenied ||
             (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
-                    PackageManager.PERMISSION_DENIED)
+                    isBackgroundLocationPermissionDenied)
         ) {
+
+            val message = if (isBackgroundLocationPermissionDenied) {
+                R.string.bckg_permission_denied_explanation
+            } else {
+                R.string.permission_denied_explanation
+            }
+
             Snackbar.make(
                 binding.root,
-                R.string.permission_denied_explanation,
+                message,
                 Snackbar.LENGTH_INDEFINITE
             )
                 .setAction(R.string.settings) {
@@ -279,6 +295,7 @@ class SaveReminderFragment : BaseFragment() {
     *  we don't resolve the check to keep the user from seeing an endless loop.
     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d(TAG, "onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
             checkDeviceLocationSettingsAndStartGeofence(false)
@@ -292,9 +309,9 @@ class SaveReminderFragment : BaseFragment() {
     }
 }
 
-private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
-private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
-private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
-private const val LOCATION_PERMISSION_INDEX = 0
-private const val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
+internal const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
+internal const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
+internal const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
+internal const val LOCATION_PERMISSION_INDEX = 0
+internal const val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
 private const val GEOFENCE_RADIUS_IN_METERS = 100f
