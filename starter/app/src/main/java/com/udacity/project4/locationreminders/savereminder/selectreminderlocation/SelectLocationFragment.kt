@@ -172,9 +172,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     "checkDeviceLocationSettingsAndShowLocation - > OnFailureListener -> exception"
                 )
                 try {
-                    exception.startResolutionForResult(
-                        requireActivity(),
-                        REQUEST_TURN_DEVICE_LOCATION_ON
+                    startIntentSenderForResult(
+                        exception.resolution.intentSender,
+                        REQUEST_TURN_DEVICE_LOCATION_ON,
+                        null,
+                        0,
+                        0,
+                        0,
+                        null
                     )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     Log.d(
