@@ -23,8 +23,12 @@ class FakeDataSource : ReminderDataSource {
     }
 
     override suspend fun getReminder(id: String): Result<ReminderDTO> {
-        return Result.Success(data[id] as ReminderDTO)
-
+        return when (shouldReturnError) {
+            true -> {
+                Result.Error(ERROR_MESSAGE, ERROR_STATUS_CODE)
+            }
+            false -> return Result.Success(data[id] as ReminderDTO)
+        }
     }
 
     override suspend fun deleteAllReminders() {
