@@ -19,9 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
-import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
-import com.udacity.project4.locationreminders.savereminder.SaveReminderFragmentDirections
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
@@ -66,8 +64,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        showSelectLocationDialog()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
@@ -188,16 +184,34 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        Log.d(TAG, "onRequestPermissionsResult")
+
         // Check if location permissions are granted and if so enable the
         // location data layer.
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            Log.d(TAG, "onRequestPermissionsResult -> requestCode == REQUEST_LOCATION_PERMISSION")
+
+            var showRationale = shouldShowRequestPermissionRationale(permissions[0])
+
+            Log.d(TAG, "onRequestPermissionsResult -> showRationale = $showRationale")
+
             if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 enableMyLocation()
+            } else {
+                onPermissionDenied(showRationale)
             }
         }
     }
 
+    // Location permission denied
+    // Show snackbar, navigate back
+    private fun onPermissionDenied(showRationale: Boolean) {
+        Log.d(TAG, "showToastNavigateBack")
+        _viewModel.onPermissionDenied(showRationale)
+    }
+
     private fun enableMyLocation() {
+        Log.d(TAG, "enableMyLocation")
         if (ActivityCompat.checkSelfPermission(
                 requireActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -206,15 +220,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION
-            )
+            Log.d(TAG, "enableMyLocation -> requestPermissions")
+
+           requestPermissions(arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION)
             return
         }
 
         map.isMyLocationEnabled = true
+
+        showSelectLocationDialog()
 
         fusedLocationClient.lastLocation.addOnSuccessListener { lastKnownLocation: Location? ->
             if (lastKnownLocation != null) {

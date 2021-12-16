@@ -98,6 +98,15 @@ class SaveReminderViewModel(private val dataSource: ReminderDataSource) : BaseVi
         navigationCommand.value = NavigationCommand.Back
     }
 
+    fun onPermissionDenied(showRationale: Boolean) {
+        showSnackBarInt.value = when (showRationale) {
+            true -> R.string.permission_denied_explanation
+            false -> R.string.permission_denied_enable_manually
+        }
+
+        navigationCommand.value = NavigationCommand.Back
+    }
+
     fun isLocationSelected(): Boolean {
         return selectedPOI.value != null
     }
