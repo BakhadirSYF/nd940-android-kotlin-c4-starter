@@ -37,6 +37,7 @@ import org.koin.test.AutoCloseKoinTest
 import android.view.inputmethod.InputMethodManager
 import androidx.test.espresso.action.ViewActions.*
 import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
+import com.udacity.project4.util.ToastMatcher
 import io.mockk.spyk
 
 
@@ -159,6 +160,10 @@ class RemindersActivityTest :
 
         // Save FAB click
         onView(withId(R.id.saveReminder)).perform(click())
+
+        // Toast is shown
+        onView(withText(R.string.geofence_added)).inRoot(ToastMatcher())
+            .check(matches(isDisplayed()))
 
         // Returns back to Reminders List, verify correct reminder is shown
         onView(withId(R.id.reminderCardView)).check(matches(isDisplayed()))

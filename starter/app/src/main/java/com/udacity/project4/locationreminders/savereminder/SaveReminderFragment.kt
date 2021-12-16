@@ -222,7 +222,7 @@ class SaveReminderFragment : BaseFragment() {
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
             addOnSuccessListener {
                 Toast.makeText(
-                    requireContext(), "Geofence added!",
+                    requireContext(), getString(R.string.geofence_added),
                     Toast.LENGTH_SHORT
                 )
                     .show()
