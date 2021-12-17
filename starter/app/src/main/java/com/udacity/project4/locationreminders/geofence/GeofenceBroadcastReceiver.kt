@@ -50,17 +50,14 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent, CoroutineS
 
             if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
                 Log.v(TAG, context.getString(R.string.geofence_entered))
-                val fenceId = when {
-                    geofencingEvent.triggeringGeofences.isNotEmpty() ->
-                        geofencingEvent.triggeringGeofences[0].requestId
-                    else -> {
-                        Log.e(TAG, "No Geofence Trigger Found! Abort mission!")
-                        return
+                if (geofencingEvent.triggeringGeofences.isNotEmpty()) {
+                    for (geofence in geofencingEvent.triggeringGeofences) {
+                        getReminderFromDbAndSendRequest(context, geofence.requestId)
                     }
+                } else {
+                    Log.e(TAG, "No Geofence Trigger Found! Abort mission!")
+                    return
                 }
-
-                getReminderFromDbAndSendRequest(context, fenceId)
-
             }
         }
 
