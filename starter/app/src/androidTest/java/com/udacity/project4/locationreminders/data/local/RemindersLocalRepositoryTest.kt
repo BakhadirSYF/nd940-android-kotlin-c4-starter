@@ -121,4 +121,20 @@ class RemindersLocalRepositoryTest {
         afterDeleteResult as Result.Success
         assertThat(afterDeleteResult.data.size, `is`(0))
     }
+
+    @Test
+    fun deleteSavedReminder_getReminderById_errorReturned() = runBlocking {
+        // GIVEN - new reminder saved in database and then all reminders deleted
+        val newReminder = ReminderDTO("title", "description", "location", 100.0, -100.0)
+        localDataSource.saveReminder(newReminder)
+        localDataSource.deleteAllReminders()
+
+        // WHEN getReminder is called
+        val result = localDataSource.getReminder(newReminder.id)
+
+        // THEN error returned
+        assertThat(result.succeeded, `is`(false))
+        result as Result.Error
+        assertThat(result.message, `is`("Reminder not found!"))
+    }
 }
