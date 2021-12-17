@@ -39,54 +39,13 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent, CoroutineS
         get() = Dispatchers.IO
 
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d(TAG, "onReceive")
         if (intent.action == ACTION_GEOFENCE_EVENT) {
-            val geofencingEvent = GeofencingEvent.fromIntent(intent)
-
-            if (geofencingEvent.hasError()) {
-                val errorMessage = errorMessage(context, geofencingEvent.errorCode)
-                Log.e(TAG, errorMessage)
-                return
-            }
-
-            if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-                Log.v(TAG, context.getString(R.string.geofence_entered))
-                if (geofencingEvent.triggeringGeofences.isNotEmpty()) {
-                    for (geofence in geofencingEvent.triggeringGeofences) {
-                        getReminderFromDbAndSendRequest(context, geofence.requestId)
-                    }
-                } else {
-                    Log.e(TAG, "No Geofence Trigger Found! Abort mission!")
-                    return
-                }
-            }
+            Log.d(TAG, "intent.action == ACTION_GEOFENCE_EVENT")
+            val service = GeofenceTransitionsJobIntentService
+            service.enqueueWork(context, intent)
         }
 
-    }
-
-    private fun getReminderFromDbAndSendRequest(context: Context, requestId: String) {
-        // Get the local repository instance
-        val remindersLocalRepository: ReminderDataSource by inject()
-        // Interaction to the repository has to be through a coroutine scope
-        CoroutineScope(coroutineContext).launch(SupervisorJob()) {
-            //get the reminder with the request id
-            val result = wrapEspressoIdlingResource {
-                remindersLocalRepository.getReminder(requestId)
-            }
-            if (result is Result.Success<ReminderDTO>) {
-                val reminderDTO = result.data
-                //send a notification to the user with the reminder details
-                sendNotification(
-                    context, ReminderDataItem(
-                        reminderDTO.title,
-                        reminderDTO.description,
-                        reminderDTO.location,
-                        reminderDTO.latitude,
-                        reminderDTO.longitude,
-                        reminderDTO.id
-                    )
-                )
-            }
-        }
     }
 }
 
