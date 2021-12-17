@@ -89,11 +89,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             binding.root,
             R.string.select_location, Snackbar.LENGTH_SHORT
         ).show()
-
-       /* val dialogBuilder = AlertDialog.Builder(requireContext())
-        dialogBuilder.setMessage(R.string.select_location)
-        dialogBuilder.setPositiveButton(R.string.dialog_button_ok, null)
-        dialogBuilder.show()*/
     }
 
     private fun onLocationSelected() {
@@ -137,7 +132,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         if (foregroundLocationPermissionApproved()) {
             checkDeviceLocationSettingsAndShowLocation()
         } else {
-            requestForegroundAndBackgroundLocationPermissions()
+            requestForegroundLocationPermission()
         }
     }
 
@@ -145,7 +140,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      *  Requests ACCESS_FINE_LOCATION
      */
     @TargetApi(29)
-    private fun requestForegroundAndBackgroundLocationPermissions() {
+    private fun requestForegroundLocationPermission() {
         if (foregroundLocationPermissionApproved())
             return
         var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -192,11 +187,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             }
         }
         locationSettingsResponseTask.addOnCompleteListener {
-            if (it.isSuccessful) {
-                showCurrentLocation()
-            } else {
-                _viewModel.onNavBack()
-            }
+            showCurrentLocation()
         }
     }
 
