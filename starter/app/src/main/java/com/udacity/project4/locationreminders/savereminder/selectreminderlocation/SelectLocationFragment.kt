@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.common.api.ResolvableApiException
@@ -86,11 +85,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    private fun showSelectLocationDialog() {
-        val dialogBuilder = AlertDialog.Builder(requireContext())
+    private fun showSelectLocationSnackbar() {
+
+        Snackbar.make(
+            binding.root,
+            R.string.select_location, Snackbar.LENGTH_SHORT
+        ).show()
+
+       /* val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setMessage(R.string.select_location)
         dialogBuilder.setPositiveButton(R.string.dialog_button_ok, null)
-        dialogBuilder.show()
+        dialogBuilder.show()*/
     }
 
     private fun onLocationSelected() {
@@ -132,7 +137,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setPoiClick(map)
         setMapStyle(map)
 
-        if (foregroundAndBackgroundLocationPermissionApproved()) {
+        if (foregroundLocationPermissionApproved()) {
             checkDeviceLocationSettingsAndShowLocation()
         } else {
             requestForegroundAndBackgroundLocationPermissions()
@@ -145,7 +150,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     @TargetApi(29)
     private fun requestForegroundAndBackgroundLocationPermissions() {
         Log.d(TAG, "requestForegroundAndBackgroundLocationPermissions")
-        if (foregroundAndBackgroundLocationPermissionApproved())
+        if (foregroundLocationPermissionApproved())
             return
         var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
         requestPermissions(permissionsArray, REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE)
@@ -219,7 +224,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         Log.d(TAG, "showCurrentLocation")
         map.isMyLocationEnabled = true
 
-        showSelectLocationDialog()
+        showSelectLocationSnackbar()
 
         fusedLocationClient.lastLocation.addOnSuccessListener { lastKnownLocation: Location? ->
             if (lastKnownLocation != null) {
@@ -341,28 +346,18 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      *  Android versions.
      */
     @TargetApi(29)
-    private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
+    private fun foregroundLocationPermissionApproved(): Boolean {
         Log.d(TAG, "foregroundAndBackgroundLocationPermissionApproved")
-        val foregroundLocationApproved = (
-                PackageManager.PERMISSION_GRANTED ==
-                        ActivityCompat.checkSelfPermission(
-                            requireContext(),
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                        )
-                        && PackageManager.PERMISSION_GRANTED ==
-                        ActivityCompat.checkSelfPermission(
-                            requireContext(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        ))
-        val backgroundPermissionApproved =
-            if (runningQOrLater) {
-                PackageManager.PERMISSION_GRANTED ==
-                        ActivityCompat.checkSelfPermission(
-                            requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        )
-            } else {
-                true
-            }
-        return foregroundLocationApproved && backgroundPermissionApproved
+        return (PackageManager.PERMISSION_GRANTED ==
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                && PackageManager.PERMISSION_GRANTED ==
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ))
+
     }
 }
