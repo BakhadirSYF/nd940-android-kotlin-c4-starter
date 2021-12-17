@@ -190,8 +190,6 @@ class SaveReminderFragment : BaseFragment() {
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
                 addGeofence()
-            } else {
-                Log.d(TAG, "checkDeviceLocationSettingsAndStartGeofence -> it.!isSuccessful")
             }
         }
     }
@@ -202,7 +200,6 @@ class SaveReminderFragment : BaseFragment() {
      */
     @SuppressLint("MissingPermission")
     private fun addGeofence() {
-        Log.d(TAG, "addGeofence")
         val geofence = Geofence.Builder()
             .setRequestId(reminderDataItem.id)
             .setCircularRegion(
@@ -300,7 +297,6 @@ class SaveReminderFragment : BaseFragment() {
     *  we don't resolve the check to keep the user from seeing an endless loop.
     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d(TAG, "onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
             checkDeviceLocationSettingsAndStartGeofence(false)

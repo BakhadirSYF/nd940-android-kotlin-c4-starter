@@ -3,24 +3,12 @@ package com.udacity.project4.locationreminders.geofence
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.example.android.architecture.blueprints.todoapp.util.wrapEspressoIdlingResource
-import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
-import com.google.android.gms.location.GeofencingEvent
 import com.udacity.project4.R
-import com.udacity.project4.locationreminders.data.ReminderDataSource
-import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.dto.Result
-import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment.Companion.ACTION_GEOFENCE_EVENT
-import com.udacity.project4.utils.sendNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
-import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -39,9 +27,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent, CoroutineS
         get() = Dispatchers.IO
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "onReceive")
         if (intent.action == ACTION_GEOFENCE_EVENT) {
-            Log.d(TAG, "intent.action == ACTION_GEOFENCE_EVENT")
             val service = GeofenceTransitionsJobIntentService
             service.enqueueWork(context, intent)
         }

@@ -57,7 +57,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        Log.d(TAG, "onCreateView")
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
@@ -75,7 +74,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -130,7 +128,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        Log.d(TAG, "onMapReady")
         map = googleMap
 
         setMapLongClick(map)
@@ -149,7 +146,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      */
     @TargetApi(29)
     private fun requestForegroundAndBackgroundLocationPermissions() {
-        Log.d(TAG, "requestForegroundAndBackgroundLocationPermissions")
         if (foregroundLocationPermissionApproved())
             return
         var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -161,7 +157,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      *  the opportunity to turn on location services within our app.
      */
     private fun checkDeviceLocationSettingsAndShowLocation(resolve: Boolean = true) {
-        Log.d(TAG, "checkDeviceLocationSettingsAndShowLocation")
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_LOW_POWER
         }
@@ -170,12 +165,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         val locationSettingsResponseTask =
             settingsClient.checkLocationSettings(builder.build())
         locationSettingsResponseTask.addOnFailureListener { exception ->
-            Log.d(TAG, "checkDeviceLocationSettingsAndShowLocation - > OnFailureListener")
             if (exception is ResolvableApiException && resolve) {
-                Log.d(
-                    TAG,
-                    "checkDeviceLocationSettingsAndShowLocation - > OnFailureListener -> exception"
-                )
                 try {
                     startIntentSenderForResult(
                         exception.resolution.intentSender,
@@ -193,10 +183,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     )
                 }
             } else {
-                Log.d(
-                    TAG,
-                    "checkDeviceLocationSettingsAndShowLocation - > OnFailureListener -> show snackbar"
-                )
                 Snackbar.make(
                     binding.root,
                     R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
@@ -206,22 +192,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             }
         }
         locationSettingsResponseTask.addOnCompleteListener {
-            Log.d(TAG, "checkDeviceLocationSettingsAndShowLocation - > OnCompleteListener")
             if (it.isSuccessful) {
                 showCurrentLocation()
             } else {
                 _viewModel.onNavBack()
-                Log.d(
-                    TAG,
-                    "checkDeviceLocationSettingsAndStartGeofence -> it.!isSuccessful"
-                )
             }
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun showCurrentLocation() {
-        Log.d(TAG, "showCurrentLocation")
         map.isMyLocationEnabled = true
 
         showSelectLocationSnackbar()
@@ -246,7 +226,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     *  we don't resolve the check to keep the user from seeing an endless loop.
     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d(TAG, "onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
             checkDeviceLocationSettingsAndShowLocation(false)
@@ -317,7 +296,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        Log.d(TAG, "onRequestPermissionsResult")
         if (
             grantResults.isEmpty() ||
             grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED
@@ -347,7 +325,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      */
     @TargetApi(29)
     private fun foregroundLocationPermissionApproved(): Boolean {
-        Log.d(TAG, "foregroundAndBackgroundLocationPermissionApproved")
         return (PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
                     requireContext(),

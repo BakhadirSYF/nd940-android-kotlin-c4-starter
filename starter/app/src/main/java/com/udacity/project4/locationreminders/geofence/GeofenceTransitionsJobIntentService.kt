@@ -27,8 +27,6 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         private const val JOB_ID = 573
 
         fun enqueueWork(context: Context, intent: Intent) {
-            Log.d(TAG, "enqueueWork")
-
             enqueueWork(
                 context,
                 GeofenceTransitionsJobIntentService::class.java, JOB_ID,
@@ -38,7 +36,6 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
     }
 
     override fun onHandleWork(intent: Intent) {
-        Log.d(TAG, "onHandleWork")
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
         if (geofencingEvent.hasError()) {
@@ -62,9 +59,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     }
 
-    //TODO: get the request id of the current geofence
     private fun sendNotification(requestId: String) {
-        Log.d(TAG, "sendNotification, requestId = $requestId")
         // Get the local repository instance
         val remindersLocalRepository: ReminderDataSource by inject()
         // Interaction to the repository has to be through a coroutine scope
